@@ -1,3 +1,4 @@
+from copy import deepcopy
 import os
 from pygame import image
 from pygame.sprite import Sprite, LayeredUpdates
@@ -45,19 +46,24 @@ class BackgroundManager(object):
             self.moving_down = False
             self.drop_speed = 1
 
-    def _set_tile_position(self, background):
+    def _create_tile(self, background, fill, skip_every=None, x_position=None):
         sprites = self.layers.get_sprites_from_layer(background._layer)
         last_sprite = sprites[len(sprites) - 1] if self.layers.get_sprites_from_layer(background._layer) else None
-        background.rect.x = (last_sprite.rect.x + last_sprite.rect.width) if last_sprite else 0
+        background.rect.x = x_position or (last_sprite.rect.x + last_sprite.rect.width) if last_sprite else 0
+        self.layers.add(background)
+
+        tile_position = (background.rect.x + (background.rect.width * (skip_every + 1 if skip_every else 1)))
+        continue_tiling = fill and (tile_position < self.screen.get_width() + background.rect.width)
+        if continue_tiling:
+            self._create_tile(Background(copy_from=background), fill, skip_every=skip_every, x_position=tile_position)
 
     def draw(self, screen=None):
         self._handle_movement()
         self.layers.draw(screen or self.screen)
 
-    def add(self, backgrounds, repeat_tiles=True):
+    def add(self, backgrounds, repeat_pattern=True, skip_every=None):
         for background in backgrounds:
-            self._set_tile_position(background)
-            self.layers.add(background)
+            self._create_tile(background, repeat_pattern, skip_every=skip_every)
 
     def _move_right(self, sprites, amount=1):
         for sprite in sprites:
@@ -102,9 +108,9 @@ class BackgroundManager(object):
 
 
 class Background(Sprite):
-    def __init__(self, app, file, layer=0):
+    def __init__(self, app='', file='', layer=0, copy_from=None):
         asset_location = os.path.join(os.path.dirname(__file__), '../{}/assets/images/{}'.format(app, file))
         super(Background, self).__init__()
-        self.image = image.load(asset_location).convert()
+        self.image = getattr(copy_from, 'image') if copy_from else image.load(asset_location).convert_alpha()
+        self._layer = getattr(copy_from, '_layer') if copy_from else layer
         self.rect = self.image.get_rect()
-        self._layer = layer

@@ -5,14 +5,15 @@ from core.event_handler import EventHandler
 
 class CastleGameLoop(GameLoop):
     def __init__(self):
-        super(CastleGameLoop, self).__init__()
+        self.screen_width = 1300
+        self.screen_height = 600
+        super(CastleGameLoop, self).__init__(res_w=self.screen_width, res_h=self.screen_height)
         app = 'castle'
-        clouds1 = Background(app, 'clouds1.png')
         empty_sky = Background(app, 'empty_sky.png')
-        clouds2 = Background(app, 'clouds1.png')
-        empty_sky2 = Background(app, 'empty_sky.png')
+        clouds = Background(app, 'clouds.png', layer=1)
         self.background_manager = BackgroundManager(self.screen)
-        self.background_manager.add([clouds1, empty_sky, clouds2, empty_sky2])
+        self.background_manager.add([empty_sky])
+        self.background_manager.add([clouds], skip_every=1)
         self.event_handler = EventHandler(self)
 
     def _fill_screen(self, **kwargs):

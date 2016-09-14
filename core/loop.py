@@ -23,7 +23,6 @@ class GameLoop(object):
                 self._quit()
 
             self.event_handler.route_event(event)
-        return True # Game Loop is still alive
 
     def _draw_background(self):
         raise NotImplementedError
