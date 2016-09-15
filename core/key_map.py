@@ -6,7 +6,8 @@ class KeyMap(object):
         self.info = game_loop.info
         self.background_manager = game_loop.background_manager
         self.key_map_up = {
-            self.pygame.K_F1: self.info.toggle_fps,
+            self.pygame.K_F1: game_loop.toggle_fullscreen,
+            self.pygame.K_F2: self.info.toggle_fps,
             self.pygame.K_RIGHT: self.background_manager.stop_moving_right,
             self.pygame.K_LEFT: self.background_manager.stop_moving_left,
             self.pygame.K_UP: self.background_manager.stop_moving_up
