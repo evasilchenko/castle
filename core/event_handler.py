@@ -12,12 +12,12 @@ class EventHandler(object):
         }
 
     def _handle_key_up(self, key):
-        action = self.key_map.map_key_up_to_action(key)
+        action = self.key_map.get_key_up_action(key)
         if callable(action):
             action()
 
     def _handle_key_down(self, key):
-        action = self.key_map.map_key_down_to_action(key)
+        action = self.key_map.get_key_down_action(key)
         if callable(action):
             action()
 

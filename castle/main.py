@@ -8,20 +8,14 @@ class CastleGameLoop(GameLoop):
         self.screen_width = 1300
         self.screen_height = 600
         super(CastleGameLoop, self).__init__(res_w=self.screen_width, res_h=self.screen_height)
-        self._setup_background_manager()
-        self._setup_event_handler()
 
-    def _setup_background_manager(self):
+    def _setup_background(self):
         app = 'castle'
-        empty_sky = Background(app, 'empty_sky.png')
-        clouds = Background(app, 'clouds.png', layer=1)
-        bg_clouds = Background(app, 'clouds1.png')
-        self.background_manager = BackgroundManager(self.screen)
+        empty_sky = Background(app, 'empty_sky.png', screen_height=self.screen.get_height())
+        clouds = Background(app, 'clouds.png', layer=1, screen_height=self.screen.get_height(), skip_every=2)
+        bg_clouds = Background(app, 'clouds1.png', screen_height=self.screen.get_height())
         self.background_manager.add([empty_sky, bg_clouds])
-        self.background_manager.add([clouds], skip_every=1)
-
-    def _setup_event_handler(self):
-        self.event_handler = EventHandler(self)
+        self.background_manager.add([clouds])
 
     def _fill_screen(self, **kwargs):
         color = (15, 122, 155) # Sky Blue

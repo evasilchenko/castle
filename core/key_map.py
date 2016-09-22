@@ -18,8 +18,8 @@ class KeyMap(object):
             self.pygame.K_UP: self.background_manager.start_moving_up
         }
 
-    def map_key_up_to_action(self, key):
+    def get_key_up_action(self, key):
         return self.key_map_up.get(key)
 
-    def map_key_down_to_action(self, key):
+    def get_key_down_action(self, key):
         return self.key_map_down.get(key)

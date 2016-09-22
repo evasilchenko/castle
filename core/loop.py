@@ -1,5 +1,6 @@
 import pygame
 
+from core.background import BackgroundManager
 from core.event_handler import EventHandler
 from core.info import Information
 
@@ -19,6 +20,8 @@ class GameLoop(object):
         self.clock = pygame.time.Clock()
         self.info = Information(self.pygame)
         self.full_screen = False
+        self._setup_background_manager()
+        self._setup_event_handler()
 
     def _fill_screen(self, color=(255, 255, 255)):
         self.screen.fill(color)
@@ -30,24 +33,26 @@ class GameLoop(object):
             self.event_handler.route_event(event)
 
     def _setup_event_handler(self):
+        self.event_handler = EventHandler(self)
+
+    def _setup_background(self):
         raise NotImplementedError
 
     def _setup_background_manager(self):
-        raise NotImplementedError
+        self.background_manager = BackgroundManager(self.screen)
+        self._setup_background()
 
     def _draw_background(self):
-        raise NotImplementedError
+        self.background_manager.draw()
 
     def toggle_fullscreen(self):
         if self.full_screen:
             self.screen = self.pygame.display.set_mode((self.window_res_w, self.window_res_h), self.pygame.RESIZABLE)
         else:
-            self.screen = self.pygame.display.set_mode((self.display_res_w, self.display_res_h), self.pygame.FULLSCREEN)
+            self.screen = self.pygame.display.set_mode((self.display_res_w, self.display_res_h), self.pygame.RESIZABLE)
 
+        self.background_manager.resize_layers_to_resolution(self.full_screen)
         self.full_screen = not self.full_screen
-        self._setup_background_manager()
-        self._setup_event_handler()
-
 
     def _quit(self):
         self.pygame.quit()
