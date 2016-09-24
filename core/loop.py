@@ -2,7 +2,9 @@ import pygame
 
 from core.background import BackgroundManager
 from core.event_handler import EventHandler
+from core.hero import HeroManager
 from core.info import Information
+from core.movement import MovementManager
 
 
 class GameLoop(object):
@@ -20,7 +22,9 @@ class GameLoop(object):
         self.clock = pygame.time.Clock()
         self.info = Information(self.pygame)
         self.full_screen = False
+        self._setup_movement_manager()
         self._setup_background_manager()
+        self._setup_hero_manager()
         self._setup_event_handler()
 
     def _fill_screen(self, color=(255, 255, 255)):
@@ -38,12 +42,28 @@ class GameLoop(object):
     def _setup_background(self):
         raise NotImplementedError
 
+    def _setup_hero(self):
+        raise NotImplementedError
+
+    def _setup_movement_manager(self):
+        self.movement_manager = MovementManager()
+
     def _setup_background_manager(self):
-        self.background_manager = BackgroundManager(self.screen)
+        self.background_manager = BackgroundManager(self.screen, self.movement_manager)
         self._setup_background()
+
+    def _setup_hero_manager(self):
+        self.hero_manager = HeroManager(self.screen, movement_manager=self.movement_manager, frame_rate=self.frame_rate)
+        self._setup_hero()
+
+    def _handle_movement(self):
+        self.movement_manager._handle_movement()
 
     def _draw_background(self):
         self.background_manager.draw()
+
+    def _draw_hero(self):
+        self.hero_manager.draw()
 
     def toggle_fullscreen(self):
         if self.full_screen:
@@ -61,7 +81,9 @@ class GameLoop(object):
         while True:
             self._deal_with_events()
             self._fill_screen()
+            self._handle_movement()
             self._draw_background()
+            self._draw_hero()
             self.info.show_fps(self.clock, self.screen)
             self.pygame.display.flip()
             self.clock.tick(self.frame_rate)

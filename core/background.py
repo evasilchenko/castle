@@ -5,17 +5,11 @@ from pygame import transform
 from pygame.sprite import Sprite, LayeredUpdates
 
 class BackgroundManager(object):
-    def __init__(self, screen=None):
+    def __init__(self, screen=None, movement_manager=None):
         self.layers = LayeredUpdates()
         self.layers_copy = None
-        self.moving_right = False
-        self.moving_left = False
-        self.moving_up = False
-        self.moving_down = False
         self.screen = screen
-        self.y_position = 0
-        self.x_position = 0
-        self.drop_speed = 1
+        self.mm = movement_manager
 
     def resize_layers_to_resolution(self, scale_up):
         height = self.screen.get_height()
@@ -40,39 +34,30 @@ class BackgroundManager(object):
 
     def _handle_movement(self):
         move_speed = 1
-        if self.moving_right:
-            self.x_position += 1
+        if self.mm.moving_right:
             for layer_sprites in self._get_all_sprites():
                 self._move_right(layer_sprites, move_speed)
                 move_speed *= 2
                 if self._check_left_bounds(layer_sprites[0]):
                     self._move_to_end(layer_sprites[0], layer_sprites[len(layer_sprites) - 1])
 
-        if self.moving_left and self.x_position >= 0:
-            self.x_position -= 1
+        if self.mm.moving_left:
             for layer_sprites in self._get_all_sprites():
                 self._move_left(layer_sprites, move_speed)
                 move_speed *= 2
                 if self._check_right_bounds(layer_sprites[len(layer_sprites) - 1]):
                     self._move_to_start(layer_sprites)
 
-
-        if self.moving_up and self.y_position < 150:
+        if self.mm.moving_up:
             move_speed *= 2
             for layer_sprites in self._get_all_sprites():
                 self._move_up(layer_sprites, move_speed)
                 move_speed *= 3
-        elif self.y_position >= 150:
-            self.moving_up = False
-            self.moving_down = True
 
-        if self.moving_down and self.y_position > 0:
-            self.drop_speed *= 2
+        if self.mm.moving_down:
+            self.mm.drop_speed *= 2
             for layer_sprites in self._get_all_sprites():
-                self._move_down(layer_sprites, self.drop_speed)
-        elif self.y_position <= 0:
-            self.moving_down = False
-            self.drop_speed = 1
+                self._move_down(layer_sprites, self.mm.drop_speed)
 
     def _check_left_bounds(self, first_sprite):
         return first_sprite.rect.right <= 0
@@ -110,7 +95,6 @@ class BackgroundManager(object):
         for sprite in sprites:
             sprite.rect.x -= amount
 
-
     def _move_left(self, sprites, amount=1):
         for sprite in sprites:
             sprite.rect.x += amount
@@ -118,36 +102,10 @@ class BackgroundManager(object):
     def _move_up(self, sprites, amount=1):
         for sprite in sprites:
             sprite.rect.y += amount
-            self.y_position = sprite.rect.y
 
     def _move_down(self, sprites, amount=1):
         for sprite in sprites:
             sprite.rect.y = (sprite.rect.y - amount) if (sprite.rect.y - amount) >= 0 else 0
-            self.y_position = sprite.rect.y
-
-    def stop_moving_left(self):
-        self.moving_left = False
-
-    def start_moving_left(self):
-        self.moving_right = False
-        self.moving_left = True
-
-    def stop_moving_right(self):
-        self.moving_right = False
-
-    def start_moving_right(self):
-        self.moving_right = True
-        self.moving_left = False
-
-    def stop_moving_up(self):
-        self.drop_speed = 1
-        self.moving_up = False
-        self.moving_down = True
-
-    def start_moving_up(self):
-        if not self.moving_down:
-            self.moving_up = True
-
 
 class Background(Sprite):
     def __init__(self, app='', file='', layer=0, copy_from=None, screen_height=0, skip_every=None):
@@ -167,6 +125,3 @@ class Background(Sprite):
 
     def scale_to_resolution(self, screen_height, scale_up):
         self._scale_to_resolution(screen_height, scale_up)
-
-
-
