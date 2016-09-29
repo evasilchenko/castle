@@ -18,7 +18,15 @@ class CastleGameLoop(GameLoop):
         self.background_manager.add([clouds])
 
     def _setup_hero(self):
-        hero = Hero(self.app, 'hero.png', screen_height=self.screen_height, screen_width=self.screen_width)
+        hero_files = {
+            'idle': 'hero.png',
+            'moving_right': {
+                'start':'hero_moving_right_start.png',
+                'middle': 'hero_moving_right_middle.png',
+                'stop': 'hero_moving_right_stop.png'
+            }
+        }
+        hero = Hero(self.app, hero_files, screen_height=self.screen_height, screen_width=self.screen_width)
         self.hero_manager.add_hero(hero)
 
     def _fill_screen(self, **kwargs):
