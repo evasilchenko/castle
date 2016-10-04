@@ -1,6 +1,7 @@
 import pygame
 
 from core.background import BackgroundManager
+from core.enemy import EnemyManager
 from core.event_handler import EventHandler
 from core.hero import HeroManager
 from core.info import Information
@@ -25,6 +26,7 @@ class GameLoop(object):
         self._setup_movement_manager()
         self._setup_background_manager()
         self._setup_hero_manager()
+        self._setup_enemy_manager()
         self._setup_event_handler()
 
     def _fill_screen(self, color=(255, 255, 255)):
@@ -56,6 +58,10 @@ class GameLoop(object):
         self.hero_manager = HeroManager(self.screen, movement_manager=self.movement_manager, frame_rate=self.frame_rate)
         self._setup_hero()
 
+    def _setup_enemy_manager(self):
+        self.enemy_manager = EnemyManager(self.screen, frame_rate=self.frame_rate)
+        self._setup_enemies()
+
     def _handle_movement(self):
         self.movement_manager._handle_movement()
 
@@ -84,6 +90,7 @@ class GameLoop(object):
             self._handle_movement()
             self._draw_background()
             self._draw_hero()
+            self._draw_enemies()
             self.info.show_fps(self.clock, self.screen)
             self.pygame.display.flip()
             self.clock.tick(self.frame_rate)

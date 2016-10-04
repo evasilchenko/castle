@@ -1,5 +1,6 @@
-from core.loop import GameLoop
 from core.background import Background
+from core.enemy import Enemy
+from core.loop import GameLoop
 from core.hero import Hero
 
 
@@ -28,6 +29,35 @@ class CastleGameLoop(GameLoop):
         }
         hero = Hero(self.app, hero_files, screen_height=self.screen_height, screen_width=self.screen_width)
         self.hero_manager.add_hero(hero)
+
+    def _setup_enemies(self):
+        rimp_files = {
+            'moving_right': {
+                'start':'rimp_moving_right_start.png',
+                'middle': 'rimp_moving_right_middle.png',
+                'stop': 'rimp_moving_right_stop.png'
+            },
+            'moving_left': {
+                'start': 'rimp_moving_right_start.png',
+                'middle': 'rimp_moving_right_middle.png',
+                'stop': 'rimp_moving_right_stop.png'
+            }
+        }
+        mimp_files = {
+            'moving_right': {
+                'start': 'mimp_moving_right_start.png',
+                'middle': 'mimp_moving_right_middle.png',
+                'stop': 'mimp_moving_right_stop.png'
+            },
+            'moving_left': {
+                'start': 'rimp_moving_right_start.png',
+                'middle': 'rimp_moving_right_middle.png',
+                'stop': 'rimp_moving_right_stop.png'
+            }
+        }
+        melee_imp = Enemy(self.app, rimp_files, screen_height=self.screen_height, screen_width=self.screen_width)
+        ranged_imp = Enemy(self.app, mimp_files, screen_height=self.screen_height, screen_width=self.screen_width)
+        self.enemy_manager.add_enemies([melee_imp, ranged_imp])
 
     def _fill_screen(self, **kwargs):
         color = (15, 122, 155) # Sky Blue
