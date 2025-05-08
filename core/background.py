@@ -6,7 +6,7 @@ from pygame.sprite import LayeredUpdates
 from core.sprite_helper import SpriteHelper
 
 class BackgroundManager(object):
-    def __init__(self, screen=None, movement_manager=None):
+    def __init__(self, screens=None, target=None, movement_managers=None):
         self.layers = LayeredUpdates()
         self.layers_copy = None
         self.screen = screen
@@ -21,7 +21,7 @@ class BackgroundManager(object):
         for layer in self.layers.layers():
             yield self.layers.get_sprites_from_layer(layer)
 
-    def _move_to_end(self, first, last):
+    def _move_to_end(self, first, last, previous):
         first.rect.x = last.rect.right + (last.rect.width * last.skip_every + 1 if last.skip_every else 0)
         self.layers.remove(first)
         self.layers.add(first)
